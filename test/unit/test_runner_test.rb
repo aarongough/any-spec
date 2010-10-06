@@ -28,4 +28,10 @@ class TestRunnerTest < Test::Unit::TestCase
     end
   end
   
+  test "should run test cases" do
+    test_runner = AnySpec::TestRunner.new("ruby", @spec_file)
+    results = test_runner.run_tests(true)
+    assert_equal 2, results.length
+  end
+  
 end

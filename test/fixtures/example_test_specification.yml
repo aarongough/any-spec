@@ -1,2 +1,2 @@
 specification_root: test_cases
-specification_extension: .scm
+specification_extension: .rb

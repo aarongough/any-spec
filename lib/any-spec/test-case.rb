@@ -3,5 +3,9 @@ module AnySpec
     def initialize(path)
     
     end
+    
+    def run
+    
+    end
   end
 end
