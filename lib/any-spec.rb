@@ -1,0 +1,1 @@
+Dir[File.join(File.dirname(__FILE__), 'any-spec', '**',  '*.rb')].each {|file| require File.expand_path(file) }
