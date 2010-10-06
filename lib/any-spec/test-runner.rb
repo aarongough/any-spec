@@ -6,7 +6,8 @@ module AnySpec
     attr_accessor :target_executable,
                   :specification_root,
                   :specification_extension,
-                  :test_case_paths
+                  :test_case_paths,
+                  :test_cases
   
     def initialize( target_executable, test_specification_file )
       # Verify that the target executable exists and is in the current PATH
@@ -22,6 +23,11 @@ module AnySpec
       
       # Find and load test-case file paths
       @test_case_paths = Dir[File.join(File.split(test_specification_file)[0], @specification_root, '**',  "*" + @specification_extension)].sort
+      
+      # Instantiate the test cases
+      @test_cases = @test_case_paths.map do |test_case|
+        AnySpec::TestCase.new(test_case)
+      end
     end
   end
 end

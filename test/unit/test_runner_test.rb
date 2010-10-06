@@ -13,6 +13,7 @@ class TestRunnerTest < Test::Unit::TestCase
     assert_equal @spec["specification_root"], test_runner.specification_root
     assert_equal @spec["specification_extension"], test_runner.specification_extension
     assert_equal 2, test_runner.test_case_paths.length
+    assert_equal 2, test_runner.test_cases.length
   end
   
   test "should raise error when target executable does not exist" do
