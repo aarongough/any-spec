@@ -1,0 +1,40 @@
+= AnySpec
+
+AnySpec is a framework for writing executable language specifications for programming languages. AnySpec makes it easy to write an automated black-box test suite for a target language. AnySpec is completely language agnostic, though AnySpec itself is written in Ruby.
+
+=== Example Tests
+
+Test cases written using AnySpec combine the program code under test and the test assertions into a single file. The program code is defined first, then a separator is inserted, then the assertions are defined:
+
+  (define test 1)  
+  (display test)
+  
+  ----
+  
+  assert_output "1"
+  assert_execution_success
+  
+Writing a 'dirty' test is also easy:
+
+  (define 1_invalid_identifier 1)
+  
+  ----
+  
+  assert_execution_failure  
+
+
+=== Installation
+
+For convenience AnySpec is packaged as a RubyGem. If you already have Ruby and RubyGems installed, then installing AnySpec is as easy as entering this at your command line:
+
+  gem install any-spec
+  
+Mac OS X and most flavour of Linux come with Ruby and RubyGems preinstalled. If you do not have them installed please check the [installation instructions on the Ruby website]{http://www.ruby-lang.org/en/downloads/}
+
+=== Usage
+
+=== Author & Credits
+
+Author:: {Aaron Gough}[mailto:aaron@aarongough.com]
+
+Copyright (c) 2010 {Aaron Gough}[http://thingsaaronmade.com/] ({thingsaaronmade.com}[http://thingsaaronmade.com/]), released under the MIT license
