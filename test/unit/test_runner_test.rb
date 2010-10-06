@@ -12,6 +12,19 @@ class TestRunnerTest < Test::Unit::TestCase
     assert_equal `which ruby`.strip, test_runner.target_executable
     assert_equal @spec["specification_root"], test_runner.specification_root
     assert_equal @spec["specification_extension"], test_runner.specification_extension
+    assert_equal 2, test_runner.test_case_paths.length
+  end
+  
+  test "should raise error when target executable does not exist" do
+    assert_raises Exception do
+      test_runner = AnySpec::TestRunner.new("blagitz", @spec_file)
+    end
+  end
+  
+  test "should raise error when specification file does not exist" do
+    assert_raises Exception do
+      test_runner = AnySpec::TestRunner.new("ruby", "~/blah/foo/blag.bar")
+    end
   end
   
 end

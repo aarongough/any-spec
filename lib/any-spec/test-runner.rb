@@ -5,7 +5,8 @@ module AnySpec
     
     attr_accessor :target_executable,
                   :specification_root,
-                  :specification_extension
+                  :specification_extension,
+                  :test_case_paths
   
     def initialize( target_executable, test_specification_file )
       # Verify that the target executable exists and is in the current PATH
@@ -18,6 +19,9 @@ module AnySpec
       test_spec = YAML::load_file(test_specification_file)
       @specification_root = test_spec["specification_root"]
       @specification_extension = test_spec["specification_extension"]
+      
+      # Find and load test-case file paths
+      @test_case_paths = Dir[File.join(File.split(test_specification_file)[0], @specification_root, '**',  "*" + @specification_extension)].sort
     end
   end
 end
