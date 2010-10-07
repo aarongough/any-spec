@@ -7,13 +7,15 @@ class TestCaseTest < Test::Unit::TestCase
   end
   
   test "should load test case" do
-    test_case = AnySpec::TestCase.new(@test_file)
-    test_case.test_code = 'print "this is a test"'
-    test_case.assertion_code = 'assert_output "this is a test"'
+    test_case = AnySpec::TestCase.new(@test_file, "ruby")
+    assert_equal test_case.test_code, 'print "this is a test"'
+    assert_equal test_case.assertion_code, 'assert_output "this is a test"'
+    assert_equal "ruby", test_case.target_executable
+    assert_equal @test_file, test_case.path
   end
   
   test "should run test case" do
-    test_case = AnySpec::TestCase.new(@test_file)
+    test_case = AnySpec::TestCase.new(@test_file, "ruby")
     result = test_case.run(true)
     assert_equal ".", result
   end

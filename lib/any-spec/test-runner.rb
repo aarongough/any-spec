@@ -23,7 +23,7 @@ module AnySpec
       @test_case_paths = Dir[File.join(File.split(test_specification_file)[0], @specification_root, '**',  "*" + @specification_extension)].sort
       # Instantiate the test cases
       @test_cases = @test_case_paths.map do |test_case|
-        AnySpec::TestCase.new(test_case)
+        AnySpec::TestCase.new(test_case, @target_executable)
       end
     end
     
