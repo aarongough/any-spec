@@ -32,6 +32,7 @@ module AnySpec
     
     def assert_block(message = "assert_block failed")
       return if(@test_case.last_assertion_result == false)
+      @test_case.assertions += 1
       unless( yield )
         @test_case.last_assertion_result = false
         @test_case.message = message

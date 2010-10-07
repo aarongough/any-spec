@@ -8,12 +8,20 @@ class AssertionsTest < Test::Unit::TestCase
     @test_case = OpenStruct.new
     @test_case.last_assertion_result = true
     @test_case.message = ""
+    @test_case.assertions = 0
   end
   
   test "assert_block should pass when block returns true" do
     AnySpec::Assertions.new(@test_case).assert_block {true}
     assert_equal true, @test_case.last_assertion_result
     assert_equal "", @test_case.message
+  end
+  
+  test "assert_block should increment assertion counter" do
+    AnySpec::Assertions.new(@test_case).assert_block {true}
+    assert_equal 1, @test_case.assertions
+    AnySpec::Assertions.new(@test_case).assert_block {true}
+    assert_equal 2, @test_case.assertions
   end
   
   test "assert_block should fail when block returns false" do

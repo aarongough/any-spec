@@ -8,7 +8,8 @@ module AnySpec
                   :last_assertion_result,
                   :message,
                   :test_output,
-                  :exit_status         
+                  :exit_status,
+                  :assertions     
   
     def initialize(path, target_executable)
       @path = path
@@ -30,6 +31,7 @@ module AnySpec
       @exit_status = $?.exitstatus
       @last_assertion_result = true
       @message = ""
+      @assertions = 0
       AnySpec::Assertions.new(self).instance_eval(@assertion_code, @path)
       return @last_assertion_result
     ensure
