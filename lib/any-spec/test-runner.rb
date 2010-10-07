@@ -29,8 +29,17 @@ module AnySpec
     
     def run_tests(silence = false)
       @test_cases.each do |test_case|
-        result = test_case.run(silence)
+        result = test_case.run
+        unless( silence )
+          message "." if(result)
+          message "F" if(!result)
+        end
       end
+    end
+    
+    def message(string)
+      print string
+      $stdout.flush
     end
   end
 end

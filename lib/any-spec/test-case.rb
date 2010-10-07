@@ -21,7 +21,7 @@ module AnySpec
       @assertion_code = test_parts[1].strip
     end
     
-    def run(silence = false)
+    def run
       temporary_filename = File.join( File.split(@path)[0], "#{Time.now.to_i}-any-spec" + File.extname(@path) )
       tmp = File.open(temporary_filename, "w")
       tmp.write(@test_code)

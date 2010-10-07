@@ -16,7 +16,7 @@ class TestCaseTest < Test::Unit::TestCase
   
   test "should run test case" do
     test_case = AnySpec::TestCase.new(@test_file, "ruby")
-    result = test_case.run(true)
+    result = test_case.run
     assert_equal true, result
   end
   
