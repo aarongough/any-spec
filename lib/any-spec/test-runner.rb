@@ -14,13 +14,13 @@ module AnySpec
       @target_executable = `which #{target_executable}`.strip
       raise Exception, "The target executable you specified does not exist!" if(@target_executable.empty?)
       # Load the test specification file
-      test_specification_file = File.expand_path(test_specification_file)
-      raise Exception, "The test specification file you supplied does not exist." unless(File.exist? test_specification_file)
-      test_spec = YAML::load_file(test_specification_file)
+      @test_specification_file = File.expand_path(test_specification_file)
+      raise Exception, "The test specification file you supplied does not exist." unless(File.exist? @test_specification_file)
+      test_spec = YAML::load_file(@test_specification_file)
       @specification_root = test_spec["specification_root"]
       @specification_extension = test_spec["specification_extension"]
       # Find and load test-case file paths
-      @test_case_paths = Dir[File.join(File.split(test_specification_file)[0], @specification_root, '**',  "*" + @specification_extension)].sort
+      @test_case_paths = Dir[File.join(File.split(@test_specification_file)[0], @specification_root, '**',  "*" + @specification_extension)].sort
       # Instantiate the test cases
       @test_cases = @test_case_paths.map do |test_case|
         AnySpec::TestCase.new(test_case, @target_executable)
@@ -28,16 +28,23 @@ module AnySpec
     end
     
     def run_tests(silence = false)
+      @silence = silence
+      message "\nLoaded suite: #{@test_specification_file}\n"
+      message "Target executable: #{@target_executable}\n"
+      message "\nStarted\n"
+      start_time = Time.now
       @test_cases.each do |test_case|
         result = test_case.run
-        unless( silence )
-          message "." if(result)
-          message "F" if(!result)
-        end
+        message "." if(result)
+        message "F" if(!result)
       end
+      message "\nFinished in #{(Time.now - start_time).to_f} seconds.\n\n"
+      message "#{@test_cases.length} tests\n\n"
+      return @test_cases
     end
     
     def message(string)
+      return if(@silence)
       print string
       $stdout.flush
     end
