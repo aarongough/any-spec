@@ -34,9 +34,16 @@ module AnySpec
       @message = ""
       @assertions = 0
       unless(@assertion_code.include?("assert_execution_success") || @assertion_code.include?("assert_execution_failure"))
-        @assertion_code += "\nassert_execution_success\n"
+        @assertion_code = "\nassert_execution_success\n" + @assertion_code
       end
-      AnySpec::Assertions.new(self).instance_eval(@assertion_code, @path)
+      begin
+        AnySpec::Assertions.new(self).instance_eval(@assertion_code, @path)
+      rescue Exception => e
+        @message = "Error in assertion code:\n"
+        @message += e.message
+        @message += "\n" + e.backtrace.join("\n")
+        @last_assertion_result = false
+      end
       return @last_assertion_result
     ensure
       File.delete(temporary_filename)
