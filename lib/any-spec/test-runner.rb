@@ -29,7 +29,7 @@ module AnySpec
     
     def run_tests(silence = false)
       @test_cases.each do |test_case|
-        result = test_case.run
+        result = test_case.run(silence)
       end
     end
   end
