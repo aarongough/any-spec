@@ -4,8 +4,11 @@ module AnySpec
     attr_accessor :test_code,
                   :assertion_code,
                   :target_executable,
-                  :path
-                  
+                  :path,
+                  :last_assertion_result,
+                  :message
+        
+    include AnySpec::Assertions          
   
     def initialize(path, target_executable)
       @path = path
@@ -22,9 +25,15 @@ module AnySpec
       temporary_filename = File.join( File.split(@path)[0], "#{Time.now.to_i}-any-spec" + File.extname(@path) )
       tmp = File.open(temporary_filename, "w")
       tmp.write(@test_code)
-      tmp.flush
-      output = `#{@target_executable} #{temporary_filename} 2>&1`
+      tmp.close
+      @output = `#{@target_executable} #{temporary_filename} 2>&1`
+      @exitstatus = $?.exitstatus
+      @last_assertion_result = true
+      @message = ""
       eval(@assertion_code, binding, @path)
+      return @last_assertion_result
+    ensure
+      File.delete(temporary_filename)
     end
     
   end
