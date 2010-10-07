@@ -33,6 +33,9 @@ module AnySpec
       @last_assertion_result = true
       @message = ""
       @assertions = 0
+      unless(@assertion_code.include?("assert_execution_success") || @assertion_code.include?("assert_execution_failure"))
+        @assertion_code += "\nassert_execution_success\n"
+      end
       AnySpec::Assertions.new(self).instance_eval(@assertion_code, @path)
       return @last_assertion_result
     ensure
