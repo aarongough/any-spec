@@ -6,9 +6,9 @@ module AnySpec
                   :target_executable,
                   :path,
                   :last_assertion_result,
-                  :message
-        
-    include AnySpec::Assertions          
+                  :message,
+                  :test_output,
+                  :exit_status         
   
     def initialize(path, target_executable)
       @path = path
@@ -26,11 +26,11 @@ module AnySpec
       tmp = File.open(temporary_filename, "w")
       tmp.write(@test_code)
       tmp.close
-      @output = `#{@target_executable} #{temporary_filename} 2>&1`
-      @exitstatus = $?.exitstatus
+      @test_output = `#{@target_executable} #{temporary_filename} 2>&1`
+      @exit_status = $?.exitstatus
       @last_assertion_result = true
       @message = ""
-      eval(@assertion_code, binding, @path)
+      AnySpec::Assertions.new(self).instance_eval(@assertion_code, @path)
       return @last_assertion_result
     ensure
       File.delete(temporary_filename)

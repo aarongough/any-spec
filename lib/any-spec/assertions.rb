@@ -1,10 +1,14 @@
 module AnySpec
-  module Assertions
+  class Assertions
+  
+    def initialize(test_case_instance)
+      @test_case = test_case_instance
+    end
   
     def flunk(message = "Flunked.")
       __wrap_assertion do
-        @last_assertion_result = false
-        @message = message
+        @test_case.last_assertion_result = false
+        @test_case.message = message
       end
     end
   
@@ -17,12 +21,12 @@ module AnySpec
       end
     end
     
-    def assert_output(expected)
-      assert( @output == expected, "Expected: '#{expected}' but was '#{@output}'")
+    def assert_output(expected, output = @output)
+      assert( output == expected, "Expected: '#{expected}' but was '#{output}'")
     end
     
     def __wrap_assertion
-      return if(@last_assertion_result == false)
+      return if(@test_case.last_assertion_result == false)
       yield
     end
   
