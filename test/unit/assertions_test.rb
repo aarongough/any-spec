@@ -65,11 +65,12 @@ class AssertionsTest < Test::Unit::TestCase
     @test_case.test_output = "test2"
     AnySpec::Assertions.new(@test_case).assert_output("test")
     assert_equal false, @test_case.last_assertion_result
-    assert_equal 'Expected "test" but was "test2"', @test_case.message
+    assert_equal "Expected output to be:\n<\"test\"> but was:\n<\"test2\">", @test_case.message
   end
   
   test "assert_execution_success should pass when exit_status == 0" do
     @test_case.exit_status = 0
+    @test_case.test_output = ""
     AnySpec::Assertions.new(@test_case).assert_execution_success
     assert_equal true, @test_case.last_assertion_result
     assert_equal '', @test_case.message
@@ -80,7 +81,7 @@ class AssertionsTest < Test::Unit::TestCase
     @test_case.exit_status = 1
     AnySpec::Assertions.new(@test_case).assert_execution_success
     assert_equal false, @test_case.last_assertion_result
-    assert_equal 'test2', @test_case.message
+    assert_equal "Execution of test case failed when it was expected to succeed:\ntest2", @test_case.message
   end
   
   test "assert_execution_failure should fail when exit_status == 0" do
@@ -88,11 +89,12 @@ class AssertionsTest < Test::Unit::TestCase
     @test_case.exit_status = 0
     AnySpec::Assertions.new(@test_case).assert_execution_failure
     assert_equal false, @test_case.last_assertion_result
-    assert_equal 'test2', @test_case.message
+    assert_equal "Execution of test case succeeded when it was expected to fail:\ntest2", @test_case.message
   end
   
   test "assert_execution_failure should pass when exit_status != 0" do
     @test_case.exit_status = 1
+    @test_case.test_output = ""
     AnySpec::Assertions.new(@test_case).assert_execution_failure
     assert_equal true, @test_case.last_assertion_result
     assert_equal '', @test_case.message

@@ -16,17 +16,19 @@ module AnySpec
     end
     
     def assert_output(expected, output = @test_case.test_output)
-      message = "Expected #{expected.inspect} but was #{output.inspect}"
+      message = "Expected output to be:\n<#{expected.inspect}> but was:\n<#{output.inspect}>"
       assert_block(message) { output == expected }
     end
     
     def assert_execution_success
-      message = @test_case.test_output
+      message = "Execution of test case failed when it was expected to succeed:\n"
+      message += @test_case.test_output
       assert_block(message) { @test_case.exit_status == 0 }
     end
     
     def assert_execution_failure
-      message = @test_case.test_output
+      message = "Execution of test case succeeded when it was expected to fail:\n"
+      message +=  @test_case.test_output
       assert_block(message) { @test_case.exit_status != 0 }
     end
     

@@ -7,7 +7,8 @@ module AnySpec
                   :specification_root,
                   :specification_extension,
                   :test_case_paths,
-                  :test_cases
+                  :test_cases,
+                  :report
   
     def initialize( target_executable, test_specification_file )
       # Verify that the target executable exists and is in the current PATH
@@ -28,25 +29,40 @@ module AnySpec
     end
     
     def run_tests(silence = false)
+      @report = ""
       @silence = silence
       message "\nLoaded suite: #{@test_specification_file}\n"
-      message "Target executable: #{@target_executable}\n"
+      message "Targeting: #{@target_executable}\n"
       message "\nStarted\n"
       start_time = Time.now
+      assertions = 0
+      failed_tests = []
       @test_cases.each do |test_case|
         result = test_case.run
         message "." if(result)
         message "F" if(!result)
+        assertions += test_case.assertions
+        failed_tests << test_case if(!result)
       end
       message "\nFinished in #{(Time.now - start_time).to_f} seconds.\n\n"
-      message "#{@test_cases.length} tests\n\n"
+      failed_tests.each_index do |x|
+        test_case = failed_tests[x]
+        message "  #{x + 1}) Failure:\n"
+        message "In file: " + test_case.path.gsub(File.split(@test_specification_file)[0], "") + "\n"
+        message test_case.message + "\n\n"
+      end
+      message "#{@test_cases.length} tests, #{assertions} assertions, #{failed_tests.count} failures\n\n"
       return @test_cases
     end
     
     def message(string)
-      return if(@silence)
-      print string
-      $stdout.flush
+      if(@silence)
+        @report << string
+      else
+        print string
+        $stdout.flush
+      end
     end
+    
   end
 end
