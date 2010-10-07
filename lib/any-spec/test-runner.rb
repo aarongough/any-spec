@@ -51,7 +51,8 @@ module AnySpec
         message "In file: " + test_case.path.gsub(File.split(@test_specification_file)[0], "") + "\n"
         message test_case.message + "\n\n"
       end
-      message "#{@test_cases.length} tests, #{assertions} assertions, #{failed_tests.count} failures\n\n"
+      pass_rate = format("%.2f",((failed_tests.length.to_f) / @test_cases.length) * 100)
+      message "#{@test_cases.length} tests, #{assertions} assertions, #{failed_tests.count} failures, #{pass_rate}% pass rate\n\n"
       return @test_cases
     end
     
