@@ -20,4 +20,25 @@ class TestCaseTest < Test::Unit::TestCase
     assert_equal true, result
   end
   
+  test "test case that is not formatted correctly should raise exception" do
+    assert_raises Exception do
+      @test_file = File.expand_path(File.join(File.dirname(__FILE__), '..', 'fixtures', 'test_cases', 'incorrect.blah'))
+      test_case = AnySpec::TestCase.new(@test_file, "ruby")
+    end
+  end
+  
+  test "empty test case should raise exception" do
+    assert_raises Exception do
+      @test_file = File.expand_path(File.join(File.dirname(__FILE__), '..', 'fixtures', 'test_cases', 'empty.blah'))
+      test_case = AnySpec::TestCase.new(@test_file, "ruby")
+    end
+  end
+  
+  test "test case that does not exist should raise exception" do
+    assert_raises Exception do
+      @test_file = File.expand_path(File.join(File.dirname(__FILE__), '..', 'fixtures', 'test_cases', 'does_not_exist.blah'))
+      test_case = AnySpec::TestCase.new(@test_file, "ruby")
+    end
+  end
+  
 end

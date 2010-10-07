@@ -12,14 +12,15 @@ module AnySpec
                   :assertions     
   
     def initialize(path, target_executable)
-      @path = path
-      @target_executable = target_executable
-      raw_test = ""
-      File.open(path) {|file| raw_test = file.read }
-      puts "Warning: file empty - #{path}" and return if(raw_test.empty?)
+      raise Exception, "\n\nNo test case exists at path: #{path}" unless(File.exist?(path))
+      raise Exception, "\n\nTest case is empty: #{path}" if(File.size(path) == 0)
+      raw_test = File.open(path).read
       test_parts = raw_test.split("----")
+      raise Exception, "\n\nTest case formatted incorrectly: #{path}" unless(test_parts.length == 2)
       @test_code = test_parts[0].strip
       @assertion_code = test_parts[1].strip
+      @path = path
+      @target_executable = target_executable
     end
     
     def run
