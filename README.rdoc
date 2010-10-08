@@ -47,11 +47,11 @@ For convenience AnySpec is packaged as a RubyGem. If you already have Ruby and R
 
   > gem install any-spec
   
-Mac OS X and most flavour of Linux come with Ruby and RubyGems preinstalled. If you do not have them installed please check the {installation instructions on the Ruby website}[http://www.ruby-lang.org/en/downloads/]
+Mac OS X and most flavours of Linux come with Ruby and RubyGems preinstalled. If you do not have them installed please check the {installation instructions on the Ruby website}[http://www.ruby-lang.org/en/downloads/]
 
 === Usage
 
-AnySpec expects that you define a small specification file in YAML format defining where your test-cases are and what their file-extension is, for instance:
+AnySpec expects that you define a small specification file in YAML format telling it where your test-cases are and what their file-extension is, for instance:
 
   # in file: r5rs-spec.yaml
   specification_root: test_cases
@@ -114,9 +114,9 @@ AnySpec assertions are all written in Ruby and executed in the context of the te
   
 For example:
 
-  assert 1 == 2 # "false is not true"
-  assert nil # "nil is not true"
-  assert 1 == 1 # passes
+  assert 1 == 2   # "false is not true"
+  assert nil      # "nil is not true"
+  assert 1 == 1   # passes
   
   assert_block("There is something wrong with the universe!") do
     true == true
