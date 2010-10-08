@@ -1,0 +1,6 @@
+#! /usr/bin/env ruby
+
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'any-spec.rb'))
+
+test_runner = AnySpec::TestRunner.new(ARGV[0], ARGV[1])
+test_runner.run_tests
