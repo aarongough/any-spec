@@ -1,6 +1,8 @@
 = AnySpec
 
-AnySpec is a framework for writing executable language specifications for programming languages. AnySpec makes it easy to write an automated black-box test suite for a target language. AnySpec is completely language agnostic, though AnySpec itself is written in Ruby.
+AnySpec is a framework for writing executable language specifications for programming languages. AnySpec makes it easy to write an automated black-box test suite for a target language. AnySpec test-cases are completely language agnostic, though the assertions associated with a test-case are written in Ruby.
+
+To maintain its independence from the language under test AnySpec expects that a test-case will run some arbitrary text file against an executable, and then the output from that executable will be assessed using the assertions defined in the test-case. This method of operation has the disadvantage that introspection into the internals of the executable is not possible, but has the advantage that the target language does not have to be advanced in its development to be targeted, unlike an in-language specification like RubySpec.
 
 === Example Tests
 
@@ -22,16 +24,151 @@ Writing a 'dirty' test is also easy:
   
   assert_execution_failure  
 
+Having a test-case that does not contain 'assert_execution_failure' implies that the test should execute successfully. Therefore:
+
+  puts 1
+  
+  ---- 
+  
+  assert_output "1"
+
+Is equivalent to:
+
+  puts 1
+  
+  ---- 
+  
+  assert_output "1"
+  assert_execution_success
 
 === Installation
 
 For convenience AnySpec is packaged as a RubyGem. If you already have Ruby and RubyGems installed, then installing AnySpec is as easy as entering this at your command line:
 
-  gem install any-spec
+  > gem install any-spec
   
-Mac OS X and most flavour of Linux come with Ruby and RubyGems preinstalled. If you do not have them installed please check the [installation instructions on the Ruby website]{http://www.ruby-lang.org/en/downloads/}
+Mac OS X and most flavour of Linux come with Ruby and RubyGems preinstalled. If you do not have them installed please check the {installation instructions on the Ruby website}[http://www.ruby-lang.org/en/downloads/]
 
 === Usage
+
+AnySpec expects that you define a small specification file in YAML format defining where your test-cases are and what their file-extension is, for instance:
+
+  # in file: r5rs-spec.yaml
+  specification_root: test_cases
+  specification_extension: .scm
+  
+AnySpec will look for test cases recursively inside the 'specification_root' folder, so with this specification file, the directory structure for your specification might look like this:
+
+  r5rs-spec
+    |
+    |- r5rs-spec.yaml
+    |- test_cases
+         |
+         |- 01-output-tests
+         |    |
+         |    |- 01-display-test.scm
+         |    |- 02-stderr-test.scm
+         |
+         |- 02-variable-tests
+              |
+              |- 01-define-test.scm
+              |- 02-set-test.scm
+              
+Any files that have a different extension to the one specified using 'specification_extension' will be ignored. Any matching files will be executed in directory/file order, which allows you to specify which order the test cases should be run in.
+
+Once you have your specification file and test-cases in order you can run them using the AnySpec command line interface:
+
+  > any-spec executable_to_target path_to_specification_file
+  
+This makes it very easy to run a specification against multiple runtimes for a given language, and can also help a lot when trying to initially bootstrap a language.
+
+=== API
+
+AnySpec currently defines a small set of assertions:
+
+  # Make the test-case always fail, good as a reminder that you haven't yet fully
+  # implemented a particular test-case
+  flunk
+
+  # Assert that the test-case runs and exits successfully (returns exit status 0)
+  assert_execution_success
+  
+  # Assert that the test-case does not execute cleanly (returns an exit status other than 0)
+  assert_execution_failure
+  
+  # Assert that the test-case outputs a given string to either STDOUT or STDERR
+  assert_output "YOUR STRING HERE" 
+  
+AnySpec assertions are all written in Ruby and executed in the context of the test-case. You can build your own custom assertions using the following generic assertions:
+
+  # Assert that 'expression' evaluates to true
+  assert expression
+  
+  # Assert that the result of a block of custom code is true
+  assert_block("Your custom failure message here") do
+    ...
+    your_custom_code_here
+    ...
+    return result # true or false
+  end
+  
+For example:
+
+  assert 1 == 2 # "false is not true"
+  assert nil # "nil is not true"
+  assert 1 == 1 # passes
+  
+  assert_block("There is something wrong with the universe!") do
+    true == true
+  end
+  
+If necessary you can also write completely custom Ruby code that has access to the data from the test-case. Accessor methods provided by the test case are:
+
+  # The result of the last assertion, if it is 'false' no further assertions should be run
+  @test_case.last_assertion_result
+  
+  # The captured output from the test-case (AnySpec captures output to STDOUT and STDERR)
+  @test_case.test_output
+  
+  # The number of assertions that have already been run against this test-case.
+  # If you write custom assertions (not using 'assert' or 'assert_block') then
+  # you will need to increment this counter manually for each assertion you run
+  @test_case.assertions
+  
+  # The message that will be output if the assertions fail, this is set automatically
+  # by the built-in assertions, but you will need to set it manually if you write your own
+  @test_case.message
+  
+An example of a custom assertion:
+
+  module AnySpec
+    class Assertions
+    
+      # Lets create a custom assertion
+      def always_fail
+        # Avoid running this assertion if a previous assertion has already failed
+        # all the built-in assertions do this, and all custom ones should too
+        return if(@test_case.last_assertion_result == false)
+        
+        # Set the assertion result to false because we're always failing
+        @test_case.last_assertion_result = false
+        
+        # Set the failure message, this will be displayed to whoever is running the test suite
+        @test_case.message = "This assertion always fails, the output of the test-case was:\n"
+        
+        # Add the test-case output to the failure message so the user can see it
+        @test_case.message += @test_case.test_output + "\n\n"
+      end
+    
+    end
+  end
+  
+  
+=== Contributing and Feedback
+
+If you have an issue with AnySpec or would like to see specific functionality added to it please email me at: aaron@aarongough.com
+
+If you would like to provide a patch please fork AnySpec, write your patches and then send me a pull request. Make sure you write tests for your new functionality so I don't accidentally break it in the future. Please do not touch VERSION or Rakefile.  
 
 === Author & Credits
 
