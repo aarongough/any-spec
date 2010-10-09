@@ -12,8 +12,7 @@ module AnySpec
   
     def initialize( target_executable, test_specification_file )
       # Verify that the target executable exists and is in the current PATH
-      @target_executable = `which #{target_executable}`.strip
-      raise Exception, "The target executable you specified does not exist!" if(@target_executable.empty?)
+      @target_executable = target_executable.strip
       # Load the test specification file
       @test_specification_file = File.expand_path(test_specification_file)
       raise Exception, "The test specification file you supplied does not exist." unless(File.exist? @test_specification_file)
