@@ -33,7 +33,7 @@ class AssertionsTest < Test::Unit::TestCase
   test "flunk should flunk" do
     AnySpec::Assertions.new(@test_case).flunk
     assert_equal false, @test_case.last_assertion_result
-    assert_equal "Flunked.", @test_case.message
+    assert @test_case.message.include? "Flunked."
   end
   
   test "assert should assert truthiness" do
@@ -45,13 +45,13 @@ class AssertionsTest < Test::Unit::TestCase
   test "assert should fail on false" do
     AnySpec::Assertions.new(@test_case).assert(false)
     assert_equal false, @test_case.last_assertion_result
-    assert_equal "false is not true", @test_case.message
+    assert @test_case.message.include? "false is not true"
   end
   
   test "assert should fail on nil" do
     AnySpec::Assertions.new(@test_case).assert(nil)
     assert_equal false, @test_case.last_assertion_result
-    assert_equal "nil is not true", @test_case.message
+    assert @test_case.message.include? "nil is not true"
   end
   
   test "assert_output should pass when output matches" do
@@ -65,7 +65,10 @@ class AssertionsTest < Test::Unit::TestCase
     @test_case.test_output = "test2"
     AnySpec::Assertions.new(@test_case).assert_output("test")
     assert_equal false, @test_case.last_assertion_result
-    assert_equal "Expected output to be:\n<\"test\"> but was:\n<\"test2\">", @test_case.message
+    assert @test_case.message.include? "Expected output to be:"
+    assert @test_case.message.include? '<"test">'
+    assert @test_case.message.include? 'but was:'
+    assert @test_case.message.include? '<"test2">'
   end
   
   test "assert_execution_success should pass when exit_status == 0" do
@@ -81,7 +84,8 @@ class AssertionsTest < Test::Unit::TestCase
     @test_case.exit_status = 1
     AnySpec::Assertions.new(@test_case).assert_execution_success
     assert_equal false, @test_case.last_assertion_result
-    assert_equal "Execution of test case failed when it was expected to succeed:\ntest2", @test_case.message
+    assert @test_case.message.include? "Execution of test case failed when it was expected to succeed:"
+    assert @test_case.message.include? "test2"
   end
   
   test "assert_execution_failure should fail when exit_status == 0" do
@@ -89,7 +93,8 @@ class AssertionsTest < Test::Unit::TestCase
     @test_case.exit_status = 0
     AnySpec::Assertions.new(@test_case).assert_execution_failure
     assert_equal false, @test_case.last_assertion_result
-    assert_equal "Execution of test case succeeded when it was expected to fail:\ntest2", @test_case.message
+    assert @test_case.message.include? "Execution of test case succeeded when it was expected to fail:"
+    assert @test_case.message.include? "test2"
   end
   
   test "assert_execution_failure should pass when exit_status != 0" do
