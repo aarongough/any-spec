@@ -30,36 +30,42 @@ module AnySpec
     def run_tests(silence = false)
       @report = ""
       @silence = silence
-      message "\nLoaded suite: #{@test_specification_file}\n"
-      message "Targeting: #{@target_executable}\n"
       message "\nStarted\n"
       start_time = Time.now
       assertions = 0
       failed_tests = []
       @test_cases.each do |test_case|
         result = test_case.run
-        message "." if(result)
-        message "F" if(!result)
+        message ".", :green if(result)
+        message "F", :red if(!result)
         assertions += test_case.assertions
         failed_tests << test_case if(!result)
       end
-      message "\nFinished in #{(Time.now - start_time).to_f} seconds.\n\n"
+      message "\n\n"
+      message "Failures:\n\n" unless failed_tests.empty?
       failed_tests.each_index do |x|
         test_case = failed_tests[x]
-        message "  #{x + 1}) Failure:\n"
-        message "In file: " + test_case.path.gsub(File.split(@test_specification_file)[0], "") + "\n"
+        message "  #{x + 1}) " + test_case.path.gsub(File.split(@test_specification_file)[0], "") + "\n"
         message test_case.message + "\n\n"
       end
-      pass_rate = format("%.2f",((failed_tests.length.to_f) / @test_cases.length) * 100)
-      message "#{@test_cases.length} tests, #{assertions} assertions, #{failed_tests.count} failures, #{pass_rate}% pass rate\n\n"
+      message "\n\nFinished in #{(Time.now - start_time).to_f} seconds.\n"
+      pass_rate = format("%.2f",(100.0 - ((failed_tests.length.to_f) / @test_cases.length) * 100))
+      result_color = failed_tests.count == 0 ? :green : :red
+      message "#{@test_cases.length} tests, #{assertions} assertions, #{failed_tests.count} failures, #{pass_rate}% pass rate\n", result_color
       return @test_cases
     end
     
-    def message(string)
+    def message(string, color = :white)
       if(@silence)
         @report << string
       else
-        print string
+        case color
+          when :white then print( "\e[37m" )
+          when :red then print( "\e[31m" )
+          when :green then print( "\e[32m" )
+          when :grey then print( "\e[90m")
+        end
+        print string + "\e[0m"
         $stdout.flush
       end
     end
